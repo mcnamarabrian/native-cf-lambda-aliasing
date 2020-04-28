@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Sample CF template that illustrates using Alias + Versions
+
+Resources:
+  HelloFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          def handler(event, context):
+            print('Hola mundo')
+            return('Hola mundo')
+      Runtime: python3.6
+      Role: !GetAtt HelloFunctionRole.Arn
+
+  HelloFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: /
+        Policies:
+          - PolicyName: root
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 'logs:*'
+                  Resource: 'arn:aws:logs:*:*:*'
+
+  HelloVersion1:
+    Type: AWS::Lambda::Version
+    DeletionPolicy: Retain
+    Properties:
+      FunctionName: !Ref HelloFunction
+      Description: Version 1
+
+  HelloVersion2:
+    Type: AWS::Lambda::Version
+    DeletionPolicy: Retain
+    Properties:
+      FunctionName: !Ref HelloFunction
+      Description: Version 2
+
+  HelloAlias:
+    Type: AWS::Lambda::Alias
+    Properties: 
+      FunctionName: !Ref HelloFunction
+      FunctionVersion: !GetAtt HelloVersion2.Version
+      Name: PROD
+      RoutingConfig:
+        AdditionalVersionWeights:
+          - FunctionVersion: !GetAtt HelloVersion1.Version
+            FunctionWeight: 0
