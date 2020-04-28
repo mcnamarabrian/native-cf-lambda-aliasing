@@ -55,7 +55,7 @@ aws lambda invoke \
     response.json
 ```
 
-## Deploy and test v2 of the application
+## Deploy and test v1 of the application
 
 The template deploys an update to our Lambda function.  It prints 'Hola mundo' and returns the string 'Hola mundo' to the caller.  There is a new version defined with this function (v2).  The alias (PROD) directs 80% of traffic to v1 of the function and 20% to v2 of the function.
 
@@ -103,7 +103,7 @@ aws lambda invoke \
     response.json
 ```
 
-## Deploy and test v3 of the application
+## Deploy and test v2 of the application
 
 The template updates our function alias (PROD) and directs 100% of traffic to v2 of the function.
 
